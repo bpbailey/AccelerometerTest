@@ -13,14 +13,15 @@ import java.util.List;
 
 
 public class MainActivity extends Activity {
-    private MotionAndOrientationTracker tracker;
+    private OrientationGestureTracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tracker = new MotionAndOrientationTracker(this);
+       // tracker = new MotionAndOrientationTracker(this);
+        tracker = new OrientationGestureTracker(this);
     }
 
 
