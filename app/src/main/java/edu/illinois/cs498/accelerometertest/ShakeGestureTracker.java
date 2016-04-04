@@ -14,8 +14,13 @@ import java.util.Calendar;
  * Created by Brian on 3/13/2016.
  */
 public class ShakeGestureTracker implements SensorEventListener {
+    // This is the min force to consider as a shake
     private static double SHAKE_MIN_THRESHOLD = 14.0;
+
+    // Number of consecutive "shakes" that must be detected
     private static int SHAKE_NUMBER_OF_STATES = 10;
+
+    // The time window in which the "shakes" must occur
     private static int SHAKE_MIN_TIME = 1000;
 
     private Context mActivity;
@@ -30,7 +35,7 @@ public class ShakeGestureTracker implements SensorEventListener {
         mSensorManager = null;
         mAccelSensor = null;
 
-
+        // Get reference to the accelerometer
         mSensorManager = (SensorManager) mActivity.getSystemService(Context.SENSOR_SERVICE);
         if (mSensorManager != null) {
             mAccelSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -55,7 +60,7 @@ public class ShakeGestureTracker implements SensorEventListener {
        trackShakeGesture(event);
     }
 
-
+    // Implement the state machine shown in the lecture notes
     private void trackShakeGesture(SensorEvent event) {
         double length = getVectorLength(event.values);
         if (state == 0) {
@@ -67,7 +72,7 @@ public class ShakeGestureTracker implements SensorEventListener {
             }
             startTime = Calendar.getInstance().getTimeInMillis();
 
-        // motion was long enough to count as a shake
+        // there was enough motion to count as a shake
         } else if (state >= SHAKE_NUMBER_OF_STATES) {
             onShakeDetected();
             state = 0;
