@@ -12,17 +12,17 @@ import android.widget.TextView;
  * Created by Brian on 3/12/2016.
  */
 public class OrientationTrackerSystem implements SensorEventListener {
-    private Activity mActivity;
+    private Activity mContext;
     private float[] mGravityVector;
     private float[] mGeomagneticVector;
     private int yaw, pitch, roll;
 
     private SensorManager mSensorManager;
-    private Sensor mAccelSensor, mGeomagneticSensor, stepSensor;
+    private Sensor mAccelSensor, mGeomagneticSensor;
 
 
     public OrientationTrackerSystem(Activity context) {
-        mActivity = context;
+        mContext = context;
         mGravityVector = null;
         mGeomagneticVector = null;
         mSensorManager = null;
@@ -30,22 +30,25 @@ public class OrientationTrackerSystem implements SensorEventListener {
         mGeomagneticSensor = null;
 
 
-        mSensorManager = (SensorManager) mActivity.getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         if (mSensorManager != null) {
             mAccelSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             mGeomagneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         }
     }
 
-    protected void onResume() {
+    // Call when the activity resumes
+    protected void registerListeners() {
         if (mSensorManager != null) {
             mSensorManager.registerListener(this, mAccelSensor, SensorManager.SENSOR_DELAY_UI);
             mSensorManager.registerListener(this, mGeomagneticSensor, SensorManager.SENSOR_DELAY_UI);
         }
     }
 
-    protected void onPause() {
+    // Call when the activity pauses to prevent processing sensor events in the background
+    protected void unRegisterListeners() {
         if (mSensorManager != null) {
+            // this unregisters listeners for both magnetometer and accelerometer
             mSensorManager.unregisterListener(this);
         }
     }
@@ -76,7 +79,7 @@ public class OrientationTrackerSystem implements SensorEventListener {
                 roll = Math.round((int)Math.toDegrees(ypr[2]));
             }
         }
-        print(null);
+        print();
     }
 
 
@@ -99,8 +102,9 @@ public class OrientationTrackerSystem implements SensorEventListener {
 
 
 
-    public void print(TextView view){
-        String s = "YAW: " + Integer.toString((int) yaw) + " PITCH: " + Integer.toString((int) pitch) + " ROLL: " + Integer.toString((int) roll);
+    public void print(){
+        String s = "Yaw: " + Integer.toString((int) yaw) + " Pitch: " + Integer.toString((int) pitch) + " Roll: " + Integer.toString((int) roll);
+        TextView view = (TextView) mContext.findViewById(R.id.mTextView2);
         if (view != null) {
             view.setText(s);
         } else {
